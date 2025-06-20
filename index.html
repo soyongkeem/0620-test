@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>허브홈</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .label {
+      color: #0066ff;
+      font-weight: bold;
+      font-size: 20px;
+      text-decoration: none;
+      position: absolute;
+    }
+
+    /* 각 위치별 링크 배치 */
+    .label.a {
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .label.b {
+      top: 45%;
+      left: 10%;
+      transform: translateY(-50%);
+    }
+
+    .label.c {
+      top: 45%;
+      right: 10%;
+      transform: translateY(-50%);
+    }
+
+    .label.about {
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* 중앙 원 이미지 */
+    .image-area {
+      width: 550px;
+      height: 550px;
+      background: url('image.png') no-repeat center center;
+      background-size: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://example.com/a" class="label a">A<br>(컵, 포크)</a>
+    <a href="https://example.com/b" class="label b">B<br>(구슬, 광각)</a>
+    <a href="https://example.com/c" class="label c">C<br>(원탁)</a>
+    <a href="https://example.com/about" class="label about">About</a>
+    <a href="index1.html" class="label preface">Preface</a>
+
+
+
+    <div class="image-area"></div>
+  </div>
+</body>
+</html>
