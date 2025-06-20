@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>서문 슬라이드</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 100%;
+      background-color: rgba(0, 102, 255, 0.3);
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 1200px;
+      height: 1200px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(0, 102, 255, 0.2);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+      z-index: 1000;
+    }
+
+    .navbar h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #0066ff;
+      margin: 0;
+    }
+
+    .navbar a {
+      color: #0066ff;
+      text-decoration: none;
+    }
+
+    .wrapper {
+      max-width: 900px;
+      margin: 100px auto 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slider {
+      overflow: hidden;
+      position: relative;
+      cursor: grab;
+    }
+
+    .slides {
+      display: flex;
+      transition: transform 0.4s ease;
+      will-change: transform;
+    }
+
+    .slide {
+      flex-shrink: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .slide img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .description {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 4px;
+      background-color: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1><a href="index.html">원판 Part B</a></h1>
+  </div>
+
+  <div class="wrapper">
+    <div class="slider" id="slider">
+      <div class="slides" id="slides">
+        <div class="slide">
+          <img src="slide1.jpg" alt="슬라이드 1">
+          <div class="description">우리는 자신을 완전한 개별자라고 생각한다</div>
+        </div>
+        <div class="slide">
+          <img src="slide2.jpg" alt="슬라이드 2">
+          <div class="description">그러나 세계는 회전한다. 거대한 회전 원판 위에 서 있다</div>
+        </div>
+        <div class="slide">
+          <img src="slide3.jpg" alt="슬라이드 3">
+          <div class="description">휘어짐 속에서 진짜로 만나는 과정</div>
+        </div>
+        <!-- 필요시 더 추가 가능 -->
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.getElementById('slides');
+    const slider = document.getElementById('slider');
+    const totalSlides = slides.children.length;
+    const dotsContainer = document.getElementById('dots');
+    let currentIndex = 0;
+    let isDragging = false;
+    let startPos = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    let animationID;
+
+    // 점 표시
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('span');
+      dot.classList.add('dot');
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => {
+        currentIndex = i;
+        setPositionByIndex();
+      });
+      dotsContainer.appendChild(dot);
+    }
+
+    // 드래그 이벤트
+    slider.addEventListener('mousedown', dragStart);
+    slider.addEventListener('mouseup', dragEnd);
+    slider.addEventListener('mouseleave', dragEnd);
+    slider.addEventListener('mousemove', dragMove);
+    slider.addEventListener('touchstart', dragStart);
+    slider.addEventListener('touchend', dragEnd);
+    slider.addEventListener('touchmove', dragMove);
+
+    function dragStart(e) {
+      isDragging = true;
+      startPos = getPositionX(e);
+      animationID = requestAnimationFrame(animation);
+      slider.classList.add('grabbing');
+    }
+
+    function dragMove(e) {
+      if (!isDragging) return;
+      const currentPosition = getPositionX(e);
+      currentTranslate = prevTranslate + currentPosition - startPos;
+    }
+
+    function dragEnd() {
+      cancelAnimationFrame(animationID);
+      isDragging = false;
+      const movedBy = currentTranslate - prevTranslate;
+
+      if (movedBy < -100 && currentIndex < totalSlides - 1) currentIndex += 1;
+      if (movedBy > 100 && currentIndex > 0) currentIndex -= 1;
+
+      setPositionByIndex();
+      slider.classList.remove('grabbing');
+    }
+
+    function getPositionX(e) {
+      return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+    }
+
+    function animation() {
+      setSliderPosition();
+      if (isDragging) requestAnimationFrame(animation);
+    }
+
+    function setSliderPosition() {
+      slides.style.transform = `translateX(${currentTranslate}px)`;
+    }
+
+    function setPositionByIndex() {
+      currentTranslate = -currentIndex * slider.offsetWidth;
+      prevTranslate = currentTranslate;
+      setSliderPosition();
+      updateDots();
+    }
+
+    function updateDots() {
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
+    }
+
+    // 자동 전환도 원하면 여기에 setInterval 추가 가능
+  </script>
+</body>
+</html>
